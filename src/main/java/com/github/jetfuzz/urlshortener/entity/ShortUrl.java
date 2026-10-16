@@ -16,11 +16,8 @@ public class ShortUrl {
 
   private String url;
   private String shortCode;
-
   @CreationTimestamp private Instant createdAt;
-
   @UpdateTimestamp private Instant updatedAt;
-
   private long accessCount;
 
   protected ShortUrl() {}
@@ -28,6 +25,10 @@ public class ShortUrl {
   public ShortUrl(String url, String shortCode) {
     this.url = url;
     this.shortCode = shortCode;
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
   }
 
   public Long getId() {

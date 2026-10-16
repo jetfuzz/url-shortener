@@ -1,0 +1,63 @@
+package com.github.jetfuzz.urlshortener.service;
+
+import com.github.jetfuzz.urlshortener.dto.ShortUrlRequest;
+import com.github.jetfuzz.urlshortener.dto.ShortUrlResponse;
+import com.github.jetfuzz.urlshortener.entity.ShortUrl;
+import com.github.jetfuzz.urlshortener.repository.ShortUrlRepository;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+@Service
+public class ShortUrlService {
+  private static final int MAX_ATTEMPTS = 5;
+  private final ShortUrlRepository repository;
+  private final ShortCodeGenerator generator;
+
+  public ShortUrlService(ShortUrlRepository repository, ShortCodeGenerator generator) {
+    this.repository = repository;
+    this.generator = generator;
+  }
+
+  public ShortUrlResponse create(ShortUrlRequest request) {
+    for (int i = 0; i < MAX_ATTEMPTS; i++) {
+      try {
+        return toResponse(
+            repository.saveAndFlush(new ShortUrl(request.url(), generator.generateShortCode())));
+      } catch (DataIntegrityViolationException _) {
+      }
+    }
+    throw new IllegalStateException("Could not generate a unique code");
+  }
+
+  public ShortUrlResponse get(String code) {
+    ShortUrl url = findCodeOrThrow(code);
+    return toResponse(url);
+  }
+
+  public ShortUrlResponse update(String code, ShortUrlRequest request) {
+    ShortUrl url = findCodeOrThrow(code);
+
+    url.setUrl(request.url());
+    repository.save(url);
+
+    return toResponse(url);
+  }
+
+  public void delete(String code) {
+    ShortUrl url = findCodeOrThrow(code);
+    repository.delete(url);
+  }
+
+  private ShortUrlResponse toResponse(ShortUrl url) {
+    return new ShortUrlResponse(
+        url.getId(), url.getUrl(), url.getShortCode(), url.getCreatedAt(), url.getUpdatedAt());
+  }
+
+  private ShortUrl findCodeOrThrow(String code) {
+    return repository
+        .findByShortCode(code)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "url not found"));
+  }
+}
