@@ -3,7 +3,6 @@ package com.github.jetfuzz.urlshortener.service;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
-import java.util.stream.Collectors;
 
 @Service
 public class ShortCodeGenerator {
