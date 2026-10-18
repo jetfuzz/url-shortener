@@ -4,11 +4,10 @@ import com.github.jetfuzz.urlshortener.dto.ShortUrlRequest;
 import com.github.jetfuzz.urlshortener.dto.ShortUrlResponse;
 import com.github.jetfuzz.urlshortener.dto.ShortUrlStatsResponse;
 import com.github.jetfuzz.urlshortener.entity.ShortUrl;
+import com.github.jetfuzz.urlshortener.exception.ShortUrlNotFoundException;
 import com.github.jetfuzz.urlshortener.repository.ShortUrlRepository;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class ShortUrlService {
@@ -52,9 +51,7 @@ public class ShortUrlService {
     ShortUrl url = findCodeOrThrow(code);
 
     url.setUrl(request.url());
-    repository.save(url);
-
-    return toResponse(url);
+    return toResponse(repository.save(url));
   }
 
   public void delete(String code) {
@@ -80,6 +77,6 @@ public class ShortUrlService {
   private ShortUrl findCodeOrThrow(String code) {
     return repository
         .findByShortCode(code)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "url not found"));
+        .orElseThrow(() -> new ShortUrlNotFoundException("url not found"));
   }
 }

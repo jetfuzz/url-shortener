@@ -4,6 +4,7 @@ import com.github.jetfuzz.urlshortener.dto.ShortUrlRequest;
 import com.github.jetfuzz.urlshortener.dto.ShortUrlResponse;
 import com.github.jetfuzz.urlshortener.dto.ShortUrlStatsResponse;
 import com.github.jetfuzz.urlshortener.service.ShortUrlService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class ShortUrlController {
 
   @PostMapping("/shorten")
   @ResponseStatus(HttpStatus.CREATED)
-  public ShortUrlResponse create(@RequestBody ShortUrlRequest request) {
+  public ShortUrlResponse create(@Valid @RequestBody ShortUrlRequest request) {
     return service.create(request);
   }
 
@@ -45,7 +46,8 @@ public class ShortUrlController {
   }
 
   @PutMapping("/shorten/{code}")
-  public ShortUrlResponse update(@PathVariable String code, @RequestBody ShortUrlRequest request) {
+  public ShortUrlResponse update(
+      @PathVariable String code, @Valid @RequestBody ShortUrlRequest request) {
     return service.update(code, request);
   }
 
