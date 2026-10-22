@@ -1,5 +1,22 @@
 services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/urlshortener
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      db:
+        condition: service_healthy
+
   db:
+    healthcheck:
+      test: [ "CMD-SHELL", "pg-isready -U ${DB_USERNAME} -d urlshortener" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
     image: postgres:18
     environment:
       POSTGRES_DB: urlshortener
