@@ -50,6 +50,7 @@ public class ShortUrlIntegrationTest {
             .returnResult()
             .getResponseBody();
 
+    assertThat(created).isNotNull();
     assertThat(created.url()).isEqualTo(originalUrl);
     assertThat(created.shortCode()).isNotBlank();
     String code = created.shortCode();
@@ -86,6 +87,7 @@ public class ShortUrlIntegrationTest {
             .returnResult()
             .getResponseBody();
 
+    assertThat(updated).isNotNull();
     assertThat(updated.url()).isEqualTo(updatedUrl);
     assertThat(updated.updatedAt()).isAfter(created.updatedAt());
 
