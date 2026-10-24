@@ -19,3 +19,8 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
       - run: ./mvnw clean verify
+      - uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: target/site/jacoco/jacoco.xml
+          fail_ci_if_error: 'false'

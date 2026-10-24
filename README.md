@@ -1,6 +1,9 @@
 # URL Shortening Service
 
-A URL Shortener API that helps shorten long URLs and tracks short link usage. Built with Java, Spring Boot, PostgreSQL, and Docker.
+[![ci](https://github.com/jetfuzz/url-shortener/actions/workflows/ci.yml/badge.svg)](https://github.com/jetfuzz/url-shortener/actions/workflows/ci.yml)
+
+A URL Shortener API that helps shorten long URLs and tracks short link usage. Built with Java, Spring Boot, PostgreSQL,
+and Docker.
 
 🔗 **[Live Demo](https://url-shortener-it6x.onrender.com/swagger-ui/index.html#/)**
 
@@ -29,7 +32,7 @@ Requires JDK 25 and Docker
    ./mvnw spring-boot:run
    ```
 
-Runs on `http://localhost:8080` with Swagger UI at `/swagger-ui/index.html`.
+Runs on `http://localhost:8080` with Swagger UI at `/swagger-ui/index.html`
 
 ## API Endpoints
 
@@ -41,6 +44,8 @@ Runs on `http://localhost:8080` with Swagger UI at `/swagger-ui/index.html`.
 - **GET** `/shorten/{code}/stats` - Returns details with access count
 
 ## Running Tests
+
+With Docker running:
 
 ```bash
 ./mvnw test

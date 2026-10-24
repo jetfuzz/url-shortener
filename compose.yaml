@@ -13,7 +13,7 @@ services:
 
   db:
     healthcheck:
-      test: [ "CMD-SHELL", "pg-isready -U ${DB_USERNAME} -d urlshortener" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d urlshortener" ]
       interval: 5s
       timeout: 3s
       retries: 10
