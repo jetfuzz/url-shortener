@@ -1,6 +1,6 @@
 # URL Shortening Service
 
-[![ci](https://github.com/jetfuzz/url-shortener/actions/workflows/ci.yml/badge.svg)](https://github.com/jetfuzz/url-shortener/actions/workflows/ci.yml)
+[![ci](https://github.com/jetfuzz/url-shortener/actions/workflows/ci.yml/badge.svg)](https://github.com/jetfuzz/url-shortener/actions/workflows/ci.yml) [![codecov](https://codecov.io/github/jetfuzz/url-shortener/graph/badge.svg?token=B8O9JT7RKC)](https://codecov.io/github/jetfuzz/url-shortener)
 
 A URL Shortener API that helps shorten long URLs and tracks short link usage. Built with Java, Spring Boot, PostgreSQL,
 and Docker.
