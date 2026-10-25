@@ -171,4 +171,39 @@ public class ShortUrlIntegrationTest {
         .jsonPath("$.accessCount")
         .isEqualTo(numberOfThreads);
   }
+
+  @Test
+  void create_duplicateCustomAlias_returns409() {
+    String alias = "alias";
+
+    restTestClient
+        .post()
+        .uri("/shorten")
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(Map.of("url", "https://example.com/", "customAlias", alias))
+        .exchange()
+        .expectStatus()
+        .isCreated();
+
+    restTestClient
+        .post()
+        .uri("/shorten")
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(Map.of("url", "https://www.wikipedia.org/", "customAlias", alias))
+        .exchange()
+        .expectStatus()
+        .isEqualTo(409)
+        .expectBody()
+        .jsonPath("$.status")
+        .isEqualTo(409);
+
+    restTestClient
+        .get()
+        .uri("/{code}", alias)
+        .exchange()
+        .expectStatus()
+        .isFound()
+        .expectHeader()
+        .location("https://example.com/");
+  }
 }

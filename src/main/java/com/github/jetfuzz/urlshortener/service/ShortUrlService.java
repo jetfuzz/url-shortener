@@ -1,9 +1,11 @@
 package com.github.jetfuzz.urlshortener.service;
 
+import com.github.jetfuzz.urlshortener.dto.CreateShortUrlRequest;
 import com.github.jetfuzz.urlshortener.dto.ShortUrlRequest;
 import com.github.jetfuzz.urlshortener.dto.ShortUrlResponse;
 import com.github.jetfuzz.urlshortener.dto.ShortUrlStatsResponse;
 import com.github.jetfuzz.urlshortener.entity.ShortUrl;
+import com.github.jetfuzz.urlshortener.exception.AliasTakenException;
 import com.github.jetfuzz.urlshortener.exception.ShortUrlNotFoundException;
 import com.github.jetfuzz.urlshortener.repository.ShortUrlRepository;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ShortUrlService {
+
   private static final int MAX_ATTEMPTS = 5;
   private final ShortUrlRepository repository;
   private final ShortCodeGenerator generator;
@@ -20,7 +23,17 @@ public class ShortUrlService {
     this.generator = generator;
   }
 
-  public ShortUrlResponse create(ShortUrlRequest request) {
+  public ShortUrlResponse create(CreateShortUrlRequest request) {
+    if (request.customAlias() != null) {
+      String code = request.customAlias();
+
+      try {
+        return toResponse(repository.saveAndFlush(new ShortUrl(request.url(), code)));
+      } catch (DataIntegrityViolationException _) {
+        throw new AliasTakenException("Alias already taken");
+      }
+    }
+
     for (int i = 0; i < MAX_ATTEMPTS; i++) {
       try {
         return toResponse(

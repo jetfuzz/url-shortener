@@ -1,8 +1,10 @@
 package com.github.jetfuzz.urlshortener.service;
 
+import com.github.jetfuzz.urlshortener.dto.CreateShortUrlRequest;
 import com.github.jetfuzz.urlshortener.dto.ShortUrlRequest;
 import com.github.jetfuzz.urlshortener.dto.ShortUrlResponse;
 import com.github.jetfuzz.urlshortener.entity.ShortUrl;
+import com.github.jetfuzz.urlshortener.exception.AliasTakenException;
 import com.github.jetfuzz.urlshortener.exception.ShortUrlNotFoundException;
 import com.github.jetfuzz.urlshortener.repository.ShortUrlRepository;
 import org.junit.jupiter.api.Test;
@@ -31,7 +33,8 @@ public class ShortUrlServiceTest {
     when(generator.generateShortCode()).thenReturn("CODE01");
     when(repo.saveAndFlush(any(ShortUrl.class))).thenAnswer(inv -> inv.getArgument(0));
 
-    ShortUrlResponse response = service.create(new ShortUrlRequest("https://wikipedia.com"));
+    ShortUrlResponse response =
+        service.create(new CreateShortUrlRequest("https://wikipedia.com", null));
 
     assertEquals("CODE01", response.shortCode());
     assertEquals("https://wikipedia.com", response.url());
@@ -44,7 +47,8 @@ public class ShortUrlServiceTest {
         .thenThrow(DataIntegrityViolationException.class)
         .thenAnswer(inv -> inv.getArgument(0));
 
-    ShortUrlResponse response = service.create(new ShortUrlRequest("https://wikipedia.com"));
+    ShortUrlResponse response =
+        service.create(new CreateShortUrlRequest("https://wikipedia.com", null));
 
     assertEquals("CODE02", response.shortCode());
     assertEquals("https://wikipedia.com", response.url());
@@ -58,8 +62,18 @@ public class ShortUrlServiceTest {
 
     assertThrows(
         IllegalStateException.class,
-        () -> service.create(new ShortUrlRequest("https://wikipedia.com")));
+        () -> service.create(new CreateShortUrlRequest("https://wikipedia.com", null)));
     verify(repo, times(5)).saveAndFlush(any());
+  }
+
+  @Test
+  void create_takenAlias_throwsAliasTakenException() {
+    when(repo.saveAndFlush(any(ShortUrl.class))).thenThrow(DataIntegrityViolationException.class);
+
+    assertThrows(
+        AliasTakenException.class,
+        () -> service.create(new CreateShortUrlRequest("https://wikipedia.com", "alias")));
+    verify(repo, times(1)).saveAndFlush(any());
   }
 
   @Test

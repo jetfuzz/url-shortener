@@ -1,9 +1,11 @@
 package com.github.jetfuzz.urlshortener.controller;
 
-import com.github.jetfuzz.urlshortener.dto.ShortUrlRequest;
+import com.github.jetfuzz.urlshortener.dto.CreateShortUrlRequest;
 import com.github.jetfuzz.urlshortener.dto.ShortUrlResponse;
 import com.github.jetfuzz.urlshortener.exception.ShortUrlNotFoundException;
 import com.github.jetfuzz.urlshortener.service.ShortUrlService;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.MediaType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +63,7 @@ public class ShortUrlControllerTest {
 
   @Test
   void create_validUrl_returns201() throws Exception {
-    when(service.create(new ShortUrlRequest("https://wikipedia.com")))
+    when(service.create(new CreateShortUrlRequest("https://wikipedia.com", null)))
         .thenReturn(
             new ShortUrlResponse(1L, "https://wikipedia.com", "CODE01", FIXED_TIME, FIXED_TIME));
 
@@ -75,6 +77,24 @@ public class ShortUrlControllerTest {
                     """))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.shortCode").value("CODE01"));
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"error", "ERROR", "Swagger-UI"})
+  void create_reservedWord_returns400(String alias) throws Exception {
+    mockMvc
+        .perform(
+            post("/shorten")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                   {"url": "https://wikipedia.com", "customAlias": "%s"}
+                   """
+                        .formatted(alias)))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.status").value(400))
+        .andExpect(jsonPath("$.errors.customAlias").exists());
+    verifyNoInteractions(service);
   }
 
   @Test

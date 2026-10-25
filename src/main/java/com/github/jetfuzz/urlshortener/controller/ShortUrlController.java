@@ -1,5 +1,6 @@
 package com.github.jetfuzz.urlshortener.controller;
 
+import com.github.jetfuzz.urlshortener.dto.CreateShortUrlRequest;
 import com.github.jetfuzz.urlshortener.dto.ShortUrlRequest;
 import com.github.jetfuzz.urlshortener.dto.ShortUrlResponse;
 import com.github.jetfuzz.urlshortener.dto.ShortUrlStatsResponse;
@@ -23,7 +24,7 @@ public class ShortUrlController {
 
   @PostMapping("/shorten")
   @ResponseStatus(HttpStatus.CREATED)
-  public ShortUrlResponse create(@Valid @RequestBody ShortUrlRequest request) {
+  public ShortUrlResponse create(@Valid @RequestBody CreateShortUrlRequest request) {
     return service.create(request);
   }
 

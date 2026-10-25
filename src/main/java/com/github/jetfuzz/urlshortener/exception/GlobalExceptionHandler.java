@@ -40,4 +40,10 @@ public class GlobalExceptionHandler {
         new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Malformed request body", null);
     return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
   }
+
+  @ExceptionHandler(AliasTakenException.class)
+  public ResponseEntity<ErrorResponse> handleTakenAlias(AliasTakenException ex) {
+    ErrorResponse error = new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage(), null);
+    return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+  }
 }
