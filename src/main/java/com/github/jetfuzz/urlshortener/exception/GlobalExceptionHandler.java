@@ -46,4 +46,10 @@ public class GlobalExceptionHandler {
     ErrorResponse error = new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage(), null);
     return new ResponseEntity<>(error, HttpStatus.CONFLICT);
   }
+
+  @ExceptionHandler(ShortUrlExpiredException.class)
+  public ResponseEntity<ErrorResponse> handleExpired(ShortUrlExpiredException ex) {
+    ErrorResponse error = new ErrorResponse(HttpStatus.GONE.value(), ex.getMessage(), null);
+    return new ResponseEntity<>(error, HttpStatus.GONE);
+  }
 }

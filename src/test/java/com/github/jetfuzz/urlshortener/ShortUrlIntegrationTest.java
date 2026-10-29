@@ -1,6 +1,7 @@
 package com.github.jetfuzz.urlshortener;
 
 import com.github.jetfuzz.urlshortener.dto.ShortUrlResponse;
+import com.github.jetfuzz.urlshortener.entity.ShortUrl;
 import com.github.jetfuzz.urlshortener.repository.ShortUrlRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
+import java.time.Instant;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -54,6 +57,18 @@ public class ShortUrlIntegrationTest {
     assertThat(created.url()).isEqualTo(originalUrl);
     assertThat(created.shortCode()).isNotBlank();
     String code = created.shortCode();
+
+    restTestClient
+        .get()
+        .uri("/shorten/{code}", code)
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody()
+        .jsonPath("$.url")
+        .isEqualTo(originalUrl)
+        .jsonPath("$.shortCode")
+        .isEqualTo(code);
 
     restTestClient
         .get()
@@ -131,6 +146,7 @@ public class ShortUrlIntegrationTest {
             .returnResult()
             .getResponseBody();
 
+    assertThat(response).isNotNull();
     String code = response.shortCode();
 
     int numberOfThreads = 50;
@@ -205,5 +221,24 @@ public class ShortUrlIntegrationTest {
         .isFound()
         .expectHeader()
         .location("https://example.com/");
+  }
+
+  @Test
+  void redirect_expiredUrl_Returns410() {
+    repository.saveAndFlush(
+        new ShortUrl("https://example.com/", "expired", Instant.now().minusMillis(100)));
+
+    restTestClient
+        .get()
+        .uri("/{code}", "expired")
+        .exchange()
+        .expectStatus()
+        .isEqualTo(410)
+        .expectBody()
+        .jsonPath("$.status")
+        .isEqualTo(410);
+
+    ShortUrl url = repository.findByShortCode("expired").orElseThrow();
+    assertThat(url.getAccessCount()).isZero();
   }
 }

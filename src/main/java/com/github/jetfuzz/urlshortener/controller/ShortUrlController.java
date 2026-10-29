@@ -1,7 +1,7 @@
 package com.github.jetfuzz.urlshortener.controller;
 
 import com.github.jetfuzz.urlshortener.dto.CreateShortUrlRequest;
-import com.github.jetfuzz.urlshortener.dto.ShortUrlRequest;
+import com.github.jetfuzz.urlshortener.dto.UpdateShortUrlRequest;
 import com.github.jetfuzz.urlshortener.dto.ShortUrlResponse;
 import com.github.jetfuzz.urlshortener.dto.ShortUrlStatsResponse;
 import com.github.jetfuzz.urlshortener.service.ShortUrlService;
@@ -48,7 +48,7 @@ public class ShortUrlController {
 
   @PutMapping("/shorten/{code}")
   public ShortUrlResponse update(
-      @PathVariable String code, @Valid @RequestBody ShortUrlRequest request) {
+      @PathVariable String code, @Valid @RequestBody UpdateShortUrlRequest request) {
     return service.update(code, request);
   }
 

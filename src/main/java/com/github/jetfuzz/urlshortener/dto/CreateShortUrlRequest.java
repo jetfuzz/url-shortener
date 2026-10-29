@@ -1,10 +1,14 @@
 package com.github.jetfuzz.urlshortener.dto;
 
 import com.github.jetfuzz.urlshortener.validation.NotReserved;
+import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.URL;
+
+import java.time.Instant;
 
 public record CreateShortUrlRequest(
     @NotBlank(message = "URL cannot be blank")
@@ -16,4 +20,6 @@ public record CreateShortUrlRequest(
             regexp = "^[A-Za-z0-9_-]+$",
             message = "Alias may only contain letters, digits, - and _")
         @NotReserved
-        String customAlias) {}
+        @Nullable
+        String customAlias,
+    @Future(message = "Expiry must be in the future") @Nullable Instant expiresAt) {}

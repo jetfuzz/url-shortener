@@ -63,9 +63,10 @@ public class ShortUrlControllerTest {
 
   @Test
   void create_validUrl_returns201() throws Exception {
-    when(service.create(new CreateShortUrlRequest("https://wikipedia.com", null)))
+    when(service.create(new CreateShortUrlRequest("https://wikipedia.com", null, null)))
         .thenReturn(
-            new ShortUrlResponse(1L, "https://wikipedia.com", "CODE01", FIXED_TIME, FIXED_TIME));
+            new ShortUrlResponse(
+                1L, "https://wikipedia.com", "CODE01", FIXED_TIME, FIXED_TIME, null));
 
     mockMvc
         .perform(

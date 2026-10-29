@@ -8,4 +8,5 @@ public record ShortUrlStatsResponse(
     String shortCode,
     Instant createdAt,
     Instant updatedAt,
+    Instant expiresAt,
     long accessCount) {}

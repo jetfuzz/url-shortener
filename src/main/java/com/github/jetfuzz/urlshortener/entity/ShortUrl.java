@@ -19,16 +19,22 @@ public class ShortUrl {
   @CreationTimestamp private Instant createdAt;
   @UpdateTimestamp private Instant updatedAt;
   private long accessCount;
+  private Instant expiresAt;
 
   protected ShortUrl() {}
 
-  public ShortUrl(String url, String shortCode) {
+  public ShortUrl(String url, String shortCode, Instant expiresAt) {
     this.url = url;
     this.shortCode = shortCode;
+    this.expiresAt = expiresAt;
   }
 
   public void setUrl(String url) {
     this.url = url;
+  }
+
+  public void setExpiresAt(Instant expiresAt) {
+    this.expiresAt = expiresAt;
   }
 
   public Long getId() {
@@ -53,5 +59,9 @@ public class ShortUrl {
 
   public long getAccessCount() {
     return accessCount;
+  }
+
+  public Instant getExpiresAt() {
+    return expiresAt;
   }
 }
